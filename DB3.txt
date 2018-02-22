@@ -1,0 +1,74 @@
+USE AdventureWorks2016CTP3;
+GO
+
+
+SELECT DISTINCT P.LastName, P.FirstName, SOH.CustomerID,
+
+-- First Query, Finding Biggest Total due in 2013
+(SELECT MAX(TotalDue) AS maxDue
+	From Sales.SalesOrderHeader AS iSOH 
+		WHERE YEAR(iSOH.OrderDate) = 2013 and iSOH.CustomerID = SOH.CustomerID
+			group by iSOH.CustomerID) AS Total_2013 
+
+, --Comma to seperate Statements
+
+----Second Query, Finding Biggest Order Number in 2013
+(SELECT TOP(1) iNSOH.SalesOrdernumber
+	 from sales.salesOrderHeader as iNSOH 
+		where iNSOH.totaldue = 
+			(SELECT MAX(TotalDue) AS maxDue
+				from Sales.SalesOrderHeader as iNNSOH 
+					where year(iNNSOH.OrderDate) = 2013 and iNNSOH.CustomerID = SOH.CustomerID
+						 group by iNNSOH.CustomerID)) AS Order_Number2013
+
+, --Comma to seperate Statements
+					 
+--Third Query, Finding Biggest Order's Date in 2013
+(SELECT TOP(1) iNNERSOH.OrderDate 
+	FROM Sales.SalesOrderHeader as iNNERSOH 
+		WHERE iNNERSOH.SalesOrderNumber = 
+			(SELECT TOP(1) iNNERSO.SalesOrderNumber 
+				FROM Sales.SalesOrderHeader iNNERSO 
+					WHERE iNNERSO.TotalDue = 
+						(SELECT MAX(TotalDue) AS maxDue
+							FROM Sales.SalesOrderHeader as iNNERS 
+								WHERE YEAR(iNNERS.orderdate) = 2013 and iNNERS.customerID = SOH.CustomerID
+									Group by iNNERS.CustomerID))) AS Order_Date2013
+, --Comma to seperate Statements
+
+----Fourth Query, Finding Biggest Total due in 2014
+(SELECT MAX(TotalDue) AS maxDue
+	From Sales.SalesOrderHeader AS iSOH 
+		WHERE YEAR(iSOH.OrderDate) = 2014 and iSOH.CustomerID = SOH.CustomerID
+			group by iSOH.CustomerID) AS Total_2014
+
+, --Comma to seperate Statements
+
+--Fifth Query, Finding Biggest Order Number in 2014
+(SELECT TOP(1) iNSOH.SalesOrdernumber
+	 from sales.salesOrderHeader as iNSOH 
+		where iNSOH.totaldue = 
+			(SELECT MAX(TotalDue) AS maxDue
+				from Sales.SalesOrderHeader as iNNSOH 
+					where year(iNNSOH.OrderDate) = 2014 and iNNSOH.CustomerID = SOH.CustomerID
+						 group by iNNSOH.CustomerID)) AS Order_Number2014 
+
+, --Comma to seperate Statements
+
+--Sixth, Finding Biggest Order's Date in 2014
+(SELECT TOP(1) iNNERSOH.OrderDate 
+	FROM Sales.SalesOrderHeader as iNNERSOH 
+	WHERE iNNERSOH.SalesOrderNumber = 
+		(SELECT TOP(1) iNNERSO.SalesOrderNumber 
+			FROM Sales.SalesOrderHeader iNNERSO 
+				WHERE iNNERSO.TotalDue = 
+					(SELECT MAX(TotalDue) as maxDue
+						FROM Sales.SalesOrderHeader as iNNERS 
+							WHERE YEAR(iNNERS.orderdate) = 2014 and iNNERS.customerID = SOH.CustomerID
+								Group by iNNERS.CustomerID))) AS Order_Date2014
+
+From Person.Person as P
+INNER JOIN Sales.Customer C ON C.PersonID = P.BusinessEntityID
+INNER JOIN Sales.SalesOrderHeader AS SOH ON SOH.CustomerID = C.CustomerID
+--WHERE YEAR(SOH.OrderDate) = 2013 OR YEAR(SOH.OrderDate) = 2014
+ORDER BY P.LastName, P.FirstName;

@@ -1,0 +1,3 @@
+SELECT DISTINCT A.city
+FROM AdventureWorks2016CTP3.Person.Address AS A
+ORDER BY city ASC;

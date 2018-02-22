@@ -1,0 +1,40 @@
+USE AdventureWorks2016CTP3;
+GO
+
+
+-- Creating View for Sales
+CREATE VIEW Sales.Total AS
+SELECT P.LastName, P.FirstName, SOH.OrderDate, SOH.TotalDue, SOH.CustomerID
+FROM Person.Person AS P
+INNER JOIN Sales.Customer AS C ON C.PersonID = P.BusinessEntityID
+INNER JOIN Sales.SalesOrderHeader AS SOH ON SOH.CustomerID = C.CustomerID
+WHERE YEAR(OrderDate) >= 2012 and
+YEAR(OrderDate) <= 2014
+GROUP BY P.LastName, P.FirstName, SOH.OrderDate, SOH.TotalDue, SOH.CustomerID;
+
+
+-- SUM and COUNT for Year of 2012
+(Select ST.LastName, ST.FirstName, COUNT(ST.OrderDate) AS Count2012, SUM(ST.TotalDue) AS Sum2012
+From Sales.Total AS ST
+WHERE YEAR(ST.OrderDate) = 2012 and ST.CustomerID = ST.CustomerID
+GROUP BY ST.LastName,ST.FirstName)
+
+-- SUM and COUNT for Year of 2013
+(Select ST.LastName, ST.FirstName, COUNT(ST.OrderDate) AS Count2013, SUM(ST.TotalDue) AS Sum2013
+From Sales.Total AS ST
+WHERE YEAR(ST.OrderDate) = 2013 and ST.CustomerID = ST.CustomerID
+GROUP BY ST.LastName,ST.FirstName)
+
+--SUM and Count for Year of 2014
+(Select ST.LastName, ST.FirstName, COUNT(ST.OrderDate) AS Count2014, SUM(ST.TotalDue) AS Sum2014
+From Sales.Total AS ST
+WHERE YEAR(ST.OrderDate) = 2014 and ST.CustomerID = ST.CustomerID
+GROUP BY ST.LastName,ST.FirstName)
+
+
+
+
+--Clean Up
+
+DROP View Sales.Total;
+GO

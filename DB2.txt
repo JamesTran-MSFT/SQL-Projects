@@ -1,0 +1,23 @@
+USE AdventureWorks2016CTP3;
+GO
+
+
+
+SELECT P.LastName, P.FirstName, CONVERT(varchar, SOH.OrderDate,101) AS OrderDate, SOH.TotalDue
+FROM Person.Person AS P JOIN Sales.Customer AS C ON C.PersonID = P.BusinessEntityID
+	JOIN Sales.SalesOrderHeader AS SOH ON SOH.CustomerID = C.CustomerID
+WHERE LastName = N'Kennedy'
+ORDER BY SOH.OrderDate ASC;
+
+
+
+OR -----------------------------------------------------------------------------------------------
+
+
+Select P.LastName, P.FirstName, convert(varchar,SOH.OrderDate,101) AS OrderDate, SOH.TotalDue
+From AdventureWorks2016CTP3.Person.Person AS P, AdventureWorks2016CTP3.Sales.Customer AS C,
+AdventureWorks2016CTP3.Sales.SalesOrderHeader AS SOH
+Where LastName = N'Kennedy' and
+		C.PersonID = P.BusinessEntityID and
+		C.CustomerID = SOH.CustomerID
+Order By SOH.OrderDate ASC;
