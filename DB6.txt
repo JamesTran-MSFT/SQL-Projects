@@ -1,0 +1,9 @@
+USE AdventureWorks2016CTP3;
+GO
+
+
+
+Select SalesOrderID, Totaldue,
+	Format (Totaldue/ SUM(totaldue) OVER (Partition By YEAR(OrderDate)) * 100, 'g', 'en-us') as Percent_2014
+	From sales.SalesOrderHeader
+	Where YEAR(OrderDate) = 2014;

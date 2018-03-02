@@ -1,0 +1,11 @@
+USE AdventureWorks2016CTP3;
+GO
+
+
+
+SELECT GROUPING_ID(PostalCode) AS p, p.postalcode,  SUM(soh.TotalDue) AS Total2014 FROM sales.SalesOrderHeader AS soh
+INNER JOIN Person.Address AS p ON soh.ShipToAddressID=p.AddressID
+WHERE YEAR (soh.OrderDate)=2014
+GROUP BY  
+GROUPING SETS(PostalCode, ())
+ORDER BY p, PostalCode
