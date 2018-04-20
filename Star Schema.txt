@@ -1,0 +1,62 @@
+/*
+Creating a Star Schema
+James Tran
+Module 3
+*/
+
+
+/*
+The following create table statement creates a Weater Station Dimension table.
+This dimension table holds all relative information for the weather station(s).
+This table is non-additive.
+*/
+CREATE TABLE WeatherStationDimension (
+weatherStationID int NOT NULL Primary Key,
+weatherStation_Longitude varchar(20) NOT NULL, --This is a SCD 2. If the weather station moves a new row will need to be created with updated information.
+weatherStation_Latitude varchar(20) NOT NULL,  --This is a SCD 2. If the weather station moves a new row will need to be created with updated information.
+weatherStation_SerialNumber int NOT NULL,
+weatherStation_Model varchar(30) NOT NULL,
+weatherStation_Calibration date NOT NULL --This is a SCD 1. Each calibration will change the date.
+);
+
+/*
+The following create table statement creates a Weather Forecast Dimension table.
+This dimension table holds all forecasted weather information.
+This table semi-additive, you can add some rows to get the average weekly, monthly, or yearly facts for the weather.
+Adding forecasted percipitation can give you weekly or monthly estimates.
+*/
+CREATE TABLE WeatherForecastDimension (
+weatherForecastID int NOT NULL Primary Key,
+precipitation_inches int, --SCD1
+temperature_degrees int, --SCD1
+windSpeed_knots int, --SCD1
+windDirection varchar(4), --SCD1, direction expressed in (N, S, E, W, SWNE, NWSE, etc...)
+atmosphericPressure varchar(20), --SCD1
+forecastDate date NOT NULL --This is a SCD3. Each new forecast will add a new column to the table
+);
+
+/*
+The following create table statement creates an Actual Weather Dimension table.
+This dimension table holds actual weather information.
+This table is semi-additive, you can add some rows to get actual numbers.
+Adding the actual percipitation can give you a weekly or monthly amount of rainfall.
+*/
+CREATE TABLE ActualWeatherDimension (
+actualWeatherID int NOT NULL Primary Key,
+precipitation_inches int, --This is a SCD1. Each change in percipitation will change the amount of inches.
+temperature_degrees int,  --This is a SCD1. Each change in temp will change the temperature.
+windSpeed_knots int,	  --This is a SCD1. Each change in wind speed will change the speed.
+windDirection varchar(4), --SCD1, direction expressed in (N, S, E, W, SWNE, NWSE, etc...)
+atmosphericPressure varchar(20), --This is a SCD1. Each change in pressure will need to be updated.
+weatherDate date NOT NULL --This is a SCD3. Each new day will add a new column to the table 
+);
+
+/*
+The following create table statement creates a Meteorlogical Fact table.
+Where each Foreign key references other dimensions within the Star Schema.
+*/
+CREATE TABLE MeteorlogicalFact_Table (
+weatherStationID int NOT NULL FOREIGN KEY REFERENCES WeatherStationDimension(weatherStationID),
+weatherForecastID int NOT NULL FOREIGN KEY REFERENCES WeatherForecastDimension(weatherForecastID),
+actualWeatherID int NOT NULL FOREIGN KEY REFERENCES ActualWeatherDimension(actualWeatherID)
+);
